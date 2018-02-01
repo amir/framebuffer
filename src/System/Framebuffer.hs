@@ -126,7 +126,7 @@ instance Storable VarScreenInfo where
     pokeByteOff ptr 128 (varSync              varInfo)
     pokeByteOff ptr 132 (varVMode             varInfo)
     pokeByteOff ptr 136 (varRotate            varInfo)
-    pokeByteOff ptr 130 (varColorSpace        varInfo)
+    pokeByteOff ptr 140 (varColorSpace        varInfo)
 
 data FixScreenInfo = FixScreenInfo {
     fixId           :: String
