@@ -1,18 +1,22 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module System.Framebuffer (
-    getVarScreenInfo
-  , getFixScreenInfo
+    withFramebuffer
+  , VarScreenInfo(..)
+  , FixScreenInfo(..)
 ) where
 
 import Data.Word
 import System.Posix.IO
 import System.Posix.IOCtl
 import Control.Applicative ((<$>), (<*>))
+import Control.Monad (forM_)
 import Foreign.C.String
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
+import qualified System.IO.MMap as MMap
+import qualified Control.Exception as E
 
 data Bitfield = Bitfield {
     bitFieldOffset   :: Word32
@@ -209,3 +213,10 @@ getFixScreenInfo :: FilePath -> IO FixScreenInfo
 getFixScreenInfo p = do
   fd <- openFd p ReadOnly Nothing defaultFileFlags
   ioctl' fd GETFSCREENINFO
+
+withFramebuffer :: FilePath -> (VarScreenInfo -> FixScreenInfo -> Ptr a -> IO a) -> IO a
+withFramebuffer d action = do
+  v <- getVarScreenInfo d
+  f <- getFixScreenInfo d
+  (ptr, rawsize, offset, size) <- MMap.mmapFilePtr d MMap.ReadWrite Nothing
+  action v f ptr `E.finally` MMap.munmapFilePtr ptr rawsize

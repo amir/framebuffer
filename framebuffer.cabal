@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 646db491423e53f562fb16bc160862309e13f12bb36e75483a8169a64ed397c3
+-- hash: a489f0ed75833eaf02a49b28bd5f13bfe5043187a8c4b35ef0f35c4a673b3d57
 
 name:           framebuffer
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
   build-depends:
       base >=4.7 && <5
     , ioctl
+    , mmap
     , unix
   exposed-modules:
       System.Framebuffer

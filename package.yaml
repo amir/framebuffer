@@ -27,6 +27,7 @@ library:
   dependencies:
   - unix
   - ioctl
+  - mmap
 
 executables:
   framebuffer-exe:
