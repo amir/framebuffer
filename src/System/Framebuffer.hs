@@ -195,28 +195,33 @@ instance Storable FixScreenInfo where
           copyArray (castPtr ptr) strPtr (max len 15)
         pokeByteOff ptr 16 (0 :: Word8)
 
-data GETVSCREENINFO = GETVSCREENINFO
-data GETFSCREENINFO = GETFSCREENINFO
+data FBIOGET_VSCREENINFO = FBIOGET_VSCREENINFO
+data FBIOGET_FSCREENINFO = FBIOGET_FSCREENINFO
 
-instance IOControl GETVSCREENINFO VarScreenInfo where
+instance IOControl FBIOGET_VSCREENINFO VarScreenInfo where
   ioctlReq _ = 0x4600
 
-instance IOControl GETFSCREENINFO FixScreenInfo where
+instance IOControl FBIOGET_FSCREENINFO FixScreenInfo where
   ioctlReq _ = 0x4602
 
 getVarScreenInfo :: FilePath -> IO VarScreenInfo
 getVarScreenInfo p = do
   fd <- openFd p ReadOnly Nothing defaultFileFlags
-  ioctl' fd GETVSCREENINFO
+  res <- ioctl' fd FBIOGET_VSCREENINFO
+  closeFd fd
+  return res
 
 getFixScreenInfo :: FilePath -> IO FixScreenInfo
 getFixScreenInfo p = do
   fd <- openFd p ReadOnly Nothing defaultFileFlags
-  ioctl' fd GETFSCREENINFO
+  res <- ioctl' fd FBIOGET_FSCREENINFO
+  closeFd fd
+  return res
 
 withFramebuffer :: FilePath -> (VarScreenInfo -> FixScreenInfo -> Ptr a -> IO a) -> IO a
 withFramebuffer d action = do
   v <- getVarScreenInfo d
   f <- getFixScreenInfo d
-  (ptr, rawsize, offset, size) <- MMap.mmapFilePtr d MMap.ReadWrite Nothing
+  frameLength <- pure $ fromIntegral(fixMemLength f)
+  (ptr, rawsize, _, _) <- MMap.mmapFilePtr d MMap.ReadWrite (Just(0,frameLength))
   action v f ptr `E.finally` MMap.munmapFilePtr ptr rawsize

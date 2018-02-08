@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a489f0ed75833eaf02a49b28bd5f13bfe5043187a8c4b35ef0f35c4a673b3d57
+-- hash: 3208202b8454989c3c9ec21f3f71bbf96643a640decd438e61310bd5803c10c2
 
 name:           framebuffer
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
     , ioctl
     , mmap
     , unix
+    , vector
   exposed-modules:
       System.Framebuffer
   other-modules:
@@ -46,6 +47,7 @@ executable framebuffer-exe
   build-depends:
       base >=4.7 && <5
     , framebuffer
+    , vector
   other-modules:
       Paths_framebuffer
   default-language: Haskell2010

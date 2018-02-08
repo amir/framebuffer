@@ -28,6 +28,7 @@ library:
   - unix
   - ioctl
   - mmap
+  - vector
 
 executables:
   framebuffer-exe:
@@ -39,6 +40,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - framebuffer
+    - vector
 
 tests:
   framebuffer-test:
